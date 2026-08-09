@@ -22,7 +22,7 @@ HeapScout is a local-first Java/Kotlin heap dump explorer focused on guided diag
 
 Advanced retained-size analysis, dominator trees, and GC-root paths are intentionally deferred until the streaming parser and UX are stable.
 
-## Planned repository layout
+## Repository layout
 
 ```text
 engine/    Pure Kotlin HPROF parsing and analysis contracts
@@ -40,6 +40,9 @@ docs/      Product decisions and architecture records
 ## Build and run
 
 ```bash
+git clone https://github.com/logcat-io/heap-scout.git
+cd heap-scout
+
 cd frontend
 npm ci
 npm run build
@@ -63,7 +66,7 @@ The UI restores the most recent analysis when the browser is refreshed. Results 
 
 The release workflow runs for every `v*` tag and attaches a self-contained application image for macOS, Windows, and Linux. Users do not need Node.js or a separate JDK:
 
-1. Download the archive matching the operating system and CPU architecture from GitHub Releases.
+1. Download the archive matching the operating system and CPU architecture from [GitHub Releases](https://github.com/logcat-io/heap-scout/releases).
 2. Download the adjacent `.sha256` file and verify the archive checksum.
 3. Extract the archive.
 4. Launch `HeapScout.app` on macOS, `HeapScout.exe` on Windows, or `bin/HeapScout` on Linux.
