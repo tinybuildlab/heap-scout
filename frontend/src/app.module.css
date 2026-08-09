@@ -1,0 +1,103 @@
+.app {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 75% 10%, var(--accent-glow), transparent 28rem),
+    var(--canvas);
+  color: var(--text-primary);
+}
+
+.topbar {
+  position: sticky;
+  z-index: 10;
+  top: 0;
+  height: var(--topbar-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-6);
+  border-bottom: 1px solid var(--border);
+  background: var(--topbar-background);
+  backdrop-filter: blur(18px);
+}
+
+.brand,
+.topbarActions,
+.localBadge {
+  display: flex;
+  align-items: center;
+}
+
+.brand {
+  gap: var(--space-3);
+  font-family: var(--font-display);
+  font-weight: 750;
+  letter-spacing: -0.02em;
+}
+
+.mark {
+  width: 2rem;
+  height: 2rem;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-sm);
+  background: var(--text-primary);
+  color: var(--canvas);
+  font: 800 var(--font-xs) var(--font-mono);
+}
+
+.topbarActions {
+  gap: var(--space-3);
+}
+
+.localBadge {
+  gap: var(--space-2);
+  color: var(--text-secondary);
+  font-size: var(--font-xs);
+  font-weight: 650;
+}
+
+.localBadge i {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: var(--radius-full);
+  background: var(--success);
+  box-shadow: var(--success-ring);
+}
+
+.themeButton,
+.errorBanner button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.themeButton {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  font-size: var(--font-xs);
+  font-weight: 650;
+}
+
+.errorBanner {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-6);
+  background: var(--danger-soft);
+  color: var(--danger-text);
+  font-size: var(--font-sm);
+}
+
+.errorBanner button {
+  font-weight: 750;
+  text-decoration: underline;
+}
+
+@media (max-width: 36rem) {
+  .localBadge {
+    display: none;
+  }
+}

@@ -1,0 +1,224 @@
+.panel {
+  margin-top: var(--space-8);
+  padding: var(--space-6);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.copy,
+.progressHeading,
+.comparisonHeading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-6);
+}
+
+.copy {
+  display: block;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--accent);
+  font-size: var(--font-xs);
+  font-weight: 800;
+  letter-spacing: 0.13em;
+}
+
+.panel h2 {
+  margin: var(--space-2) 0 0;
+  font-family: var(--font-display);
+  font-size: var(--font-xl);
+  letter-spacing: -0.035em;
+}
+
+.panel p:not(.eyebrow) {
+  margin: var(--space-2) 0 0;
+  color: var(--text-tertiary);
+  font-size: var(--font-sm);
+}
+
+.openForm,
+.search {
+  margin-top: var(--space-6);
+}
+
+.chooseButton {
+  width: 100%;
+  min-height: 3.25rem;
+  margin-top: var(--space-6);
+  padding: var(--space-3) var(--space-5);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font: inherit;
+  font-size: var(--font-sm);
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.chooseButton:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.chooseButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.pathDivider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: var(--space-5) 0 0;
+  color: var(--text-tertiary);
+  font-size: var(--font-xs);
+}
+
+.pathDivider::before,
+.pathDivider::after {
+  height: 1px;
+  flex: 1;
+  background: var(--border);
+  content: '';
+}
+
+.pathDivider + .openForm {
+  margin-top: var(--space-4);
+}
+
+.openForm label,
+.search label {
+  display: block;
+  margin-bottom: var(--space-2);
+  color: var(--text-secondary);
+  font-size: var(--font-xs);
+  font-weight: 700;
+}
+
+.openForm div,
+.search div {
+  display: flex;
+}
+
+.openForm input,
+.search input {
+  min-width: 0;
+  flex: 1;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border);
+  border-right: 0;
+  border-radius: var(--radius-md) 0 0 var(--radius-md);
+  outline: 0;
+  background: var(--surface-subtle);
+  color: var(--text-primary);
+  font: var(--font-xs) var(--font-mono);
+}
+
+.openForm input:focus,
+.search input:focus {
+  border-color: var(--accent);
+  box-shadow: var(--focus-ring);
+}
+
+.openForm button,
+.search button {
+  padding: 0 var(--space-5);
+  border: 1px solid var(--text-primary);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  background: var(--text-primary);
+  color: var(--canvas);
+  font: inherit;
+  font-size: var(--font-sm);
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.openForm button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.secondaryButton {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-subtle);
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: var(--font-xs);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.panel > progress {
+  width: 100%;
+  height: 0.65rem;
+  margin-top: var(--space-6);
+  accent-color: var(--accent);
+}
+
+.tableWrap {
+  margin-top: var(--space-6);
+  overflow-x: auto;
+}
+
+.tableWrap table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-sm);
+}
+
+.tableWrap th,
+.tableWrap td {
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.tableWrap th {
+  color: var(--text-tertiary);
+  font-size: var(--font-xs);
+}
+
+.tableWrap td:first-child {
+  width: 52%;
+}
+
+.tableWrap code {
+  font: var(--font-xs) var(--font-mono);
+}
+
+.growth {
+  color: var(--danger-text);
+  font-weight: 750;
+}
+
+.reduction {
+  color: var(--success);
+  font-weight: 750;
+}
+
+.unchanged {
+  color: var(--text-tertiary);
+}
+
+.estimate {
+  margin-left: var(--space-2);
+  color: var(--warning-text);
+  font-size: var(--font-2xs);
+  font-weight: 750;
+  text-transform: uppercase;
+}
+
+@media (max-width: 48rem) {
+  .progressHeading,
+  .comparisonHeading {
+    flex-direction: column;
+  }
+}

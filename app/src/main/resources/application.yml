@@ -1,0 +1,15 @@
+server:
+  address: 127.0.0.1
+  port: 8911
+  shutdown: graceful
+
+spring:
+  application:
+    name: heap-scout
+  lifecycle:
+    timeout-per-shutdown-phase: 15s
+
+logging:
+  level:
+    root: INFO
+    io.heapscout: INFO
