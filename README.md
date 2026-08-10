@@ -1,8 +1,10 @@
 # HeapScout
 
+[![CI](https://github.com/logcat-io/heap-scout/actions/workflows/ci.yml/badge.svg)](https://github.com/logcat-io/heap-scout/actions/workflows/ci.yml)
+
 HeapScout is a local-first Java/Kotlin heap dump explorer focused on guided diagnosis, fast search, and side-by-side comparison.
 
-> Status: functional MVP. Native packages are produced by the release workflow; the first public release still needs a GitHub repository/tag and cross-platform artifact verification.
+> Status: public beta. Tagged releases produce self-contained native packages for macOS, Windows, and Linux with cross-platform smoke tests.
 
 ## Product principles
 
