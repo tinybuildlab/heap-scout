@@ -54,6 +54,8 @@ java -jar app/build/libs/heapscout.jar
 
 Open <http://127.0.0.1:8911>. During UI development, run `npm run dev` in `frontend/`; Vite proxies `/api` to the local JVM process.
 
+The system file picker is available when HeapScout runs in a desktop session. In a genuinely headless environment, the UI detects that limitation before opening a dialog and keeps the absolute-path input available.
+
 To analyze a dump as soon as the application starts, pass the file as a non-option argument:
 
 ```bash

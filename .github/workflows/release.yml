@@ -58,13 +58,20 @@ jobs:
           mkdir -p package-input release
           cp app/build/libs/heapscout.jar package-input/heapscout.jar
           cp LICENSE THIRD_PARTY_NOTICES.md package-input/
+          java_options=(--java-options "-Xmx2g")
+          if [[ "$RUNNER_OS" == "macOS" ]]; then
+            java_options+=(
+              --java-options "-Djava.awt.headless=false"
+              --java-options "-Dapple.awt.application.name=HeapScout"
+            )
+          fi
           jpackage \
             --type app-image \
             --name HeapScout \
             --input package-input \
             --main-jar heapscout.jar \
             --main-class org.springframework.boot.loader.launch.JarLauncher \
-            --java-options "-Xmx2g" \
+            "${java_options[@]}" \
             --dest release
 
       - name: Smoke-test Linux application image

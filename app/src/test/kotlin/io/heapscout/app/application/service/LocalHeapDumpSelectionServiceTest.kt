@@ -38,6 +38,21 @@ class LocalHeapDumpSelectionServiceTest {
 
             assertNull(result)
         }
+
+        @Test
+        @DisplayName("데스크톱 창을 열 수 없는 환경이면 파일 선택기 사용 가능 여부는 false이다")
+        fun isAvailable_headlessPicker_returnsFalse() {
+            val unavailablePicker = object : LocalHeapDumpPickerPort {
+                override fun pick(): Path? = null
+
+                override fun isAvailable(): Boolean = false
+            }
+            val sut = LocalHeapDumpSelectionService(unavailablePicker)
+
+            val available = sut.isAvailable()
+
+            assertEquals(false, available)
+        }
     }
 
     @Nested

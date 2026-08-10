@@ -1,6 +1,6 @@
 import {create} from 'zustand';
-import {apiClient} from '../api/api-client';
-import type {AnalysisJob, ClassHistogramEntry, HeapComparisonEntry} from '../types';
+import {ApiClientError, apiClient} from '../api/api-client';
+import type {AnalysisFailure, AnalysisJob, ClassHistogramEntry, HeapComparisonEntry} from '../types';
 
 interface AnalysisState {
   job: AnalysisJob | null;
@@ -15,7 +15,8 @@ interface AnalysisState {
   isOpeningComparison: boolean;
   isLoadingHistogram: boolean;
   isLoadingComparison: boolean;
-  error: string | null;
+  systemPickerAvailable: boolean | null;
+  error: AnalysisFailure | null;
 }
 
 interface AnalysisActions {
@@ -45,6 +46,7 @@ export const initialAnalysisState: AnalysisState = {
   isOpeningComparison: false,
   isLoadingHistogram: false,
   isLoadingComparison: false,
+  systemPickerAvailable: null,
   error: null,
 };
 
@@ -55,16 +57,37 @@ export const useAnalysisStore = create<AnalysisState & AnalysisActions>((set, ge
     if (get().hasBootstrapped || get().isBootstrapping) return;
     set({isBootstrapping: true});
     try {
-      const jobs = await apiClient.getRecentJobs();
-      if (!get().job) set({job: jobs[0] ?? null});
+      const [jobs, capabilities] = await Promise.allSettled([
+        apiClient.getRecentJobs(),
+        apiClient.getLocalFileCapabilities(),
+      ]);
+      if (jobs.status === 'fulfilled') {
+        if (!get().job) set({job: jobs.value[0] ?? null});
+      } else {
+        set({error: toFailure(jobs.reason)});
+      }
+      set({
+        systemPickerAvailable: capabilities.status === 'fulfilled'
+          ? capabilities.value.systemPickerAvailable
+          : null,
+      });
     } catch (error: unknown) {
-      set({error: toMessage(error)});
+      set({error: toFailure(error)});
     } finally {
       set({isBootstrapping: false, hasBootstrapped: true});
     }
   },
 
   chooseDump: async () => {
+    if (get().systemPickerAvailable === false) {
+      set({
+        error: {
+          code: 'FILE_PICKER_UNAVAILABLE',
+          message: 'The system file picker is unavailable in this runtime.',
+        },
+      });
+      return;
+    }
     set({isChoosing: true, error: null});
     try {
       const selection = await apiClient.pickLocalHeapDump();
@@ -73,13 +96,22 @@ export const useAnalysisStore = create<AnalysisState & AnalysisActions>((set, ge
         await get().openDump(selection.path);
       }
     } catch (error: unknown) {
-      set({error: toMessage(error)});
+      set({error: toFailure(error)});
     } finally {
       set({isChoosing: false});
     }
   },
 
   chooseComparisonDump: async () => {
+    if (get().systemPickerAvailable === false) {
+      set({
+        error: {
+          code: 'FILE_PICKER_UNAVAILABLE',
+          message: 'The system file picker is unavailable in this runtime.',
+        },
+      });
+      return;
+    }
     set({isChoosingComparison: true, error: null});
     try {
       const selection = await apiClient.pickLocalHeapDump();
@@ -88,7 +120,7 @@ export const useAnalysisStore = create<AnalysisState & AnalysisActions>((set, ge
         await get().openComparisonDump(selection.path);
       }
     } catch (error: unknown) {
-      set({error: toMessage(error)});
+      set({error: toFailure(error)});
     } finally {
       set({isChoosingComparison: false});
     }
@@ -100,7 +132,7 @@ export const useAnalysisStore = create<AnalysisState & AnalysisActions>((set, ge
       const job = await apiClient.openDump(path);
       set({job});
     } catch (error: unknown) {
-      set({error: toMessage(error)});
+      set({error: toFailure(error)});
     } finally {
       set({isOpening: false});
     }
@@ -112,7 +144,7 @@ export const useAnalysisStore = create<AnalysisState & AnalysisActions>((set, ge
       const comparisonJob = await apiClient.openDump(path);
       set({comparisonJob});
     } catch (error: unknown) {
-      set({error: toMessage(error)});
+      set({error: toFailure(error)});
     } finally {
       set({isOpeningComparison: false});
     }
@@ -130,10 +162,10 @@ export const useAnalysisStore = create<AnalysisState & AnalysisActions>((set, ge
       set({
         job,
         comparisonJob,
-        error: job?.error?.message ?? comparisonJob?.error?.message ?? null,
+        error: job?.error ?? comparisonJob?.error ?? null,
       });
     } catch (error: unknown) {
-      set({error: toMessage(error)});
+      set({error: toFailure(error)});
     }
   },
 
@@ -145,7 +177,7 @@ export const useAnalysisStore = create<AnalysisState & AnalysisActions>((set, ge
       const page = await apiClient.getHistogram(current.id, query);
       set({histogram: page.items});
     } catch (error: unknown) {
-      set({error: toMessage(error)});
+      set({error: toFailure(error)});
     } finally {
       set({isLoadingHistogram: false});
     }
@@ -160,7 +192,7 @@ export const useAnalysisStore = create<AnalysisState & AnalysisActions>((set, ge
       const page = await apiClient.getComparison(baseline.id, target.id, query);
       set({comparison: page.items});
     } catch (error: unknown) {
-      set({error: toMessage(error)});
+      set({error: toFailure(error)});
     } finally {
       set({isLoadingComparison: false});
     }
@@ -173,7 +205,7 @@ export const useAnalysisStore = create<AnalysisState & AnalysisActions>((set, ge
       await apiClient.closeDump(target.id);
       set({comparisonJob: null, comparison: []});
     } catch (error: unknown) {
-      set({error: toMessage(error)});
+      set({error: toFailure(error)});
     }
   },
 
@@ -186,15 +218,21 @@ export const useAnalysisStore = create<AnalysisState & AnalysisActions>((set, ge
         apiClient.closeDump(current.id),
         target ? apiClient.closeDump(target.id) : Promise.resolve(),
       ]);
-      set({...initialAnalysisState, hasBootstrapped: true});
+      set({
+        ...initialAnalysisState,
+        hasBootstrapped: true,
+        systemPickerAvailable: get().systemPickerAvailable,
+      });
     } catch (error: unknown) {
-      set({error: toMessage(error)});
+      set({error: toFailure(error)});
     }
   },
 
   clearError: () => set({error: null}),
 }));
 
-function toMessage(error: unknown): string {
-  return error instanceof Error ? error.message : 'An unexpected error occurred.';
+function toFailure(error: unknown): AnalysisFailure {
+  if (error instanceof ApiClientError) return {code: error.code, message: error.message};
+  if (error instanceof Error) return {code: 'UNEXPECTED_ERROR', message: error.message};
+  return {code: 'UNEXPECTED_ERROR', message: 'An unexpected error occurred.'};
 }

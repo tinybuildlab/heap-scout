@@ -74,3 +74,7 @@ export interface LocalFileSelection {
   readonly selected: boolean;
   readonly path: string | null;
 }
+
+export interface LocalFileCapabilities {
+  readonly systemPickerAvailable: boolean;
+}

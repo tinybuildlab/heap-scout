@@ -1,5 +1,5 @@
 .panel {
-  margin-top: var(--space-8);
+  margin-top: var(--space-6);
   padding: var(--space-6);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
@@ -7,88 +7,94 @@
   box-shadow: var(--shadow-sm);
 }
 
-.copy,
-.progressHeading,
-.comparisonHeading {
+.copy {
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--space-6);
+  gap: var(--space-4);
 }
 
-.copy {
-  display: block;
+.headingIcon {
+  width: 3rem;
+  height: 3rem;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: var(--radius-lg);
+  background: var(--cyan-soft);
+  color: var(--cyan);
+}
+
+.headingIcon svg {
+  width: 1.4rem;
 }
 
 .eyebrow {
   margin: 0;
   color: var(--accent);
-  font-size: var(--font-xs);
-  font-weight: 800;
-  letter-spacing: 0.13em;
+  font-size: var(--font-2xs);
+  font-weight: 850;
+  letter-spacing: 0.14em;
 }
 
 .panel h2 {
   margin: var(--space-2) 0 0;
   font-family: var(--font-display);
   font-size: var(--font-xl);
-  letter-spacing: -0.035em;
+  letter-spacing: -0.04em;
 }
 
 .panel p:not(.eyebrow) {
   margin: var(--space-2) 0 0;
   color: var(--text-tertiary);
   font-size: var(--font-sm);
+  line-height: 1.55;
 }
 
-.openForm,
-.search {
+.openActions {
+  display: grid;
+  grid-template-columns: minmax(16rem, 0.65fr) auto minmax(24rem, 1fr);
+  align-items: end;
+  gap: var(--space-4);
   margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border);
 }
 
 .chooseButton {
-  width: 100%;
-  min-height: 3.25rem;
-  margin-top: var(--space-6);
-  padding: var(--space-3) var(--space-5);
+  min-height: 3.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-5);
   border: 0;
   border-radius: var(--radius-md);
-  background: var(--accent);
+  background: var(--brand-gradient);
   color: var(--accent-contrast);
   font: inherit;
   font-size: var(--font-sm);
-  font-weight: 750;
+  font-weight: 800;
   cursor: pointer;
+  box-shadow: 0 8px 20px var(--accent-glow);
+  transition: transform var(--transition), opacity var(--transition);
 }
 
 .chooseButton:hover:not(:disabled) {
-  background: var(--accent-hover);
+  transform: translateY(-1px);
 }
 
 .chooseButton:disabled {
-  cursor: not-allowed;
-  opacity: 0.48;
+  opacity: 0.42;
+}
+
+.chooseButton svg {
+  width: 1.15rem;
 }
 
 .pathDivider {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  margin: var(--space-5) 0 0;
+  align-self: center;
   color: var(--text-tertiary);
   font-size: var(--font-xs);
-}
-
-.pathDivider::before,
-.pathDivider::after {
-  height: 1px;
-  flex: 1;
-  background: var(--border);
-  content: '';
-}
-
-.pathDivider + .openForm {
-  margin-top: var(--space-4);
 }
 
 .openForm label,
@@ -97,61 +103,78 @@
   margin-bottom: var(--space-2);
   color: var(--text-secondary);
   font-size: var(--font-xs);
-  font-weight: 700;
+  font-weight: 750;
 }
 
-.openForm div,
-.search div {
+.openForm > div,
+.search > div {
   display: flex;
+  align-items: center;
 }
 
 .openForm input,
 .search input {
   min-width: 0;
+  height: 3.15rem;
   flex: 1;
-  padding: var(--space-3) var(--space-4);
   border: 1px solid var(--border);
-  border-right: 0;
-  border-radius: var(--radius-md) 0 0 var(--radius-md);
   outline: 0;
   background: var(--surface-subtle);
   color: var(--text-primary);
   font: var(--font-xs) var(--font-mono);
+  transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
+}
+
+.openForm input {
+  padding: 0 var(--space-4);
+  border-right: 0;
+  border-radius: var(--radius-md) 0 0 var(--radius-md);
 }
 
 .openForm input:focus,
-.search input:focus {
+.search > div:focus-within {
   border-color: var(--accent);
+  background: var(--surface);
   box-shadow: var(--focus-ring);
 }
 
 .openForm button,
 .search button {
+  min-height: 3.15rem;
   padding: 0 var(--space-5);
   border: 1px solid var(--text-primary);
   border-radius: 0 var(--radius-md) var(--radius-md) 0;
   background: var(--text-primary);
-  color: var(--canvas);
+  color: var(--text-inverse);
   font: inherit;
   font-size: var(--font-sm);
-  font-weight: 750;
+  font-weight: 800;
   cursor: pointer;
 }
 
 .openForm button:disabled {
-  cursor: not-allowed;
-  opacity: 0.48;
+  opacity: 0.4;
+}
+
+.progressHeading,
+.comparisonHeading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-6);
 }
 
 .secondaryButton {
-  padding: var(--space-2) var(--space-3);
+  min-height: 2.55rem;
+  flex: 0 0 auto;
+  padding: 0 var(--space-4);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   background: var(--surface-subtle);
   color: var(--text-secondary);
   font: inherit;
   font-size: var(--font-xs);
-  font-weight: 700;
+  font-weight: 800;
   cursor: pointer;
 }
 
@@ -162,28 +185,71 @@
   accent-color: var(--accent);
 }
 
-.tableWrap {
+.search {
+  max-width: 34rem;
   margin-top: var(--space-6);
+}
+
+.search > div {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-subtle);
+}
+
+.search svg {
+  width: 1.05rem;
+  margin-left: var(--space-4);
+  flex: 0 0 auto;
+  color: var(--text-tertiary);
+}
+
+.search input {
+  padding: 0 var(--space-3);
+  border: 0;
+  background: transparent;
+}
+
+.search button {
+  margin: -1px -1px -1px 0;
+}
+
+.tableWrap {
+  margin-top: var(--space-5);
   overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
 }
 
 .tableWrap table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   font-size: var(--font-sm);
 }
 
 .tableWrap th,
 .tableWrap td {
-  padding: var(--space-3);
+  padding: var(--space-3) var(--space-4);
   border-bottom: 1px solid var(--border);
   text-align: left;
   white-space: nowrap;
 }
 
 .tableWrap th {
+  background: var(--surface-subtle);
   color: var(--text-tertiary);
-  font-size: var(--font-xs);
+  font-size: var(--font-2xs);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.tableWrap tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.tableWrap tbody tr:hover {
+  background: var(--accent-soft);
 }
 
 .tableWrap td:first-child {
@@ -196,12 +262,12 @@
 
 .growth {
   color: var(--danger-text);
-  font-weight: 750;
+  font-weight: 800;
 }
 
 .reduction {
   color: var(--success);
-  font-weight: 750;
+  font-weight: 800;
 }
 
 .unchanged {
@@ -210,15 +276,67 @@
 
 .estimate {
   margin-left: var(--space-2);
+  padding: 0.15rem var(--space-2);
+  border-radius: var(--radius-full);
+  background: var(--warning-soft);
   color: var(--warning-text);
   font-size: var(--font-2xs);
-  font-weight: 750;
+  font-weight: 800;
   text-transform: uppercase;
 }
 
+.emptyRows {
+  padding: var(--space-8);
+  color: var(--text-tertiary);
+  font-size: var(--font-sm);
+  text-align: center;
+}
+
+@media (max-width: 64rem) {
+  .openActions {
+    grid-template-columns: 1fr;
+  }
+
+  .pathDivider {
+    text-align: center;
+  }
+}
+
 @media (max-width: 48rem) {
+  .panel {
+    padding: var(--space-5);
+    border-radius: var(--radius-lg);
+  }
+
   .progressHeading,
   .comparisonHeading {
     flex-direction: column;
+  }
+}
+
+@media (max-width: 32rem) {
+  .openForm > div,
+  .search > div {
+    align-items: stretch;
+    flex-direction: column;
+    border: 0;
+    background: transparent;
+  }
+
+  .openForm input,
+  .search input {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+  }
+
+  .search svg {
+    display: none;
+  }
+
+  .openForm button,
+  .search button {
+    margin: var(--space-2) 0 0;
+    border-radius: var(--radius-md);
   }
 }

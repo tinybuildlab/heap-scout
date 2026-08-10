@@ -1,4 +1,6 @@
 import {formatBytes, formatCount} from '../../lib/format';
+import {CompareIcon, SearchIcon} from '../common/icons';
+import {useI18n} from '../../hooks/use-i18n';
 import type {ClassHistogramEntry} from '../../types';
 import styles from './investigation-leads.module.css';
 
@@ -7,6 +9,7 @@ interface InvestigationLeadsProps {
 }
 
 export function InvestigationLeads({histogram}: InvestigationLeadsProps) {
+  const {locale, t} = useI18n();
   if (histogram.length === 0) return null;
 
   const largest = histogram.reduce((current, entry) => (
@@ -17,33 +20,34 @@ export function InvestigationLeads({histogram}: InvestigationLeadsProps) {
   ));
 
   return (
-    <section className={styles.section} aria-labelledby="investigation-leads-title">
+    <aside className={styles.section} aria-labelledby="investigation-leads-title">
       <div className={styles.heading}>
         <div>
-          <p>INVESTIGATION LEADS</p>
-          <h2 id="investigation-leads-title">Start with evidence, not a leak verdict.</h2>
+          <p>{t('investigation.eyebrow')}</p>
+          <h2 id="investigation-leads-title">{t('investigation.title')}</h2>
+          <small>{t('investigation.description')}</small>
         </div>
-        <span>Shallow heap only</span>
+        <span>{t('investigation.shallowOnly')}</span>
       </div>
       <div className={styles.grid}>
         <article>
-          <small>Largest class footprint</small>
+          <div className={styles.cardLabel}><SearchIcon /><small>{t('investigation.largest')}</small></div>
           <code>{largest.className}</code>
           <strong>{formatBytes(largest.shallowHeapBytes)}</strong>
-          <p>Inspect whether this class is expected to own this much direct memory.</p>
+          <p>{t('investigation.largestHint')}</p>
         </article>
         <article>
-          <small>Highest instance count</small>
+          <div className={styles.cardLabel}><SearchIcon /><small>{t('investigation.mostNumerous')}</small></div>
           <code>{mostNumerous.className}</code>
-          <strong>{formatCount(mostNumerous.instanceCount)} objects</strong>
-          <p>A high count matters most when it keeps growing across snapshots.</p>
+          <strong>{t('investigation.objects', {count: formatCount(mostNumerous.instanceCount, locale)})}</strong>
+          <p>{t('investigation.countHint')}</p>
         </article>
         <article className={styles.guidance}>
-          <small>How to confirm</small>
-          <strong>Compare a later snapshot</strong>
-          <p>Consistent positive growth is a stronger signal. Retained size and GC-root paths are required before calling it a leak.</p>
+          <div className={styles.cardLabel}><CompareIcon /><small>{t('investigation.confirm')}</small></div>
+          <strong>{t('investigation.compareLater')}</strong>
+          <p>{t('investigation.confirmHint')}</p>
         </article>
       </div>
-    </section>
+    </aside>
   );
 }

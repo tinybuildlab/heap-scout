@@ -48,6 +48,7 @@ trap cleanup EXIT INT TERM
 smoke_directory="$(mktemp -d "${TMPDIR:-/tmp}/heapscout-package-smoke.XXXXXX")"
 smoke_log="$smoke_directory/heapscout.log"
 smoke_jobs_response="$smoke_directory/jobs.json"
+smoke_capabilities_response="$smoke_directory/capabilities.json"
 smoke_ui_response="$smoke_directory/index.html"
 smoke_base_url="http://127.0.0.1:$smoke_port"
 
@@ -85,6 +86,20 @@ done
 
 [[ "$smoke_ready" == "true" ]] || fail "API did not become ready within 60 seconds"
 [[ "$(tr -d '[:space:]' < "$smoke_jobs_response")" == "[]" ]] || fail "fresh package returned an unexpected job list"
+
+smoke_capabilities_status="$(
+  curl \
+    --silent \
+    --output "$smoke_capabilities_response" \
+    --write-out '%{http_code}' \
+    --max-time 5 \
+    "$smoke_base_url/api/local-files/capabilities" || true
+)"
+[[ "$smoke_capabilities_status" == "200" ]] || fail "file-picker capabilities did not return HTTP 200"
+smoke_capabilities_json="$(tr -d '[:space:]' < "$smoke_capabilities_response")"
+smoke_capabilities_pattern='^\{"systemPickerAvailable":(true|false)\}$'
+[[ "$smoke_capabilities_json" =~ $smoke_capabilities_pattern ]] || \
+  fail "file-picker capabilities did not contain a Boolean availability value"
 
 smoke_ui_status="$(
   curl \

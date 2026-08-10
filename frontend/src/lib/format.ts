@@ -9,11 +9,13 @@ export function formatBytes(bytes: number): string {
   return `${sign}${value >= 10 || unitIndex === 0 ? value.toFixed(0) : value.toFixed(1)} ${BYTE_UNITS[unitIndex]}`;
 }
 
-export function formatCount(value: number): string {
-  return new Intl.NumberFormat('en-US').format(value);
+export function formatCount(value: number, locale: 'ko' | 'en' = 'en'): string {
+  return new Intl.NumberFormat(locale === 'ko' ? 'ko-KR' : 'en-US').format(value);
 }
 
-export function formatDuration(milliseconds: number): string {
+export function formatDuration(milliseconds: number, locale: 'ko' | 'en' = 'en'): string {
   if (milliseconds < 1_000) return `${milliseconds} ms`;
-  return `${(milliseconds / 1_000).toFixed(1)} s`;
+  return locale === 'ko'
+    ? `${(milliseconds / 1_000).toFixed(1)}초`
+    : `${(milliseconds / 1_000).toFixed(1)} s`;
 }

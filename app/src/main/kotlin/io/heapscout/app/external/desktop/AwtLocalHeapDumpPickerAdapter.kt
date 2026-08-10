@@ -15,8 +15,10 @@ import java.util.concurrent.atomic.AtomicReference
 
 @Component
 class AwtLocalHeapDumpPickerAdapter : LocalHeapDumpPickerPort {
+    override fun isAvailable(): Boolean = !GraphicsEnvironment.isHeadless()
+
     override fun pick(): Path? {
-        if (GraphicsEnvironment.isHeadless()) {
+        if (!isAvailable()) {
             throw LocalFilePickerUnavailableException(
                 "The system file picker is unavailable in headless mode. Enter the heap dump path manually.",
             )

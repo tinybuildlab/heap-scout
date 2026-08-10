@@ -4,4 +4,6 @@ import java.nio.file.Path
 
 fun interface LocalHeapDumpPickerPort {
     fun pick(): Path?
+
+    fun isAvailable(): Boolean = true
 }

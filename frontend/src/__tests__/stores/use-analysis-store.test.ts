@@ -15,6 +15,7 @@ describe('useAnalysisStore: local heap dump workflow', () => {
   it('bootstrap_recentJob_restoresMostRecentAnalysis', async () => {
     const recentJob = job('recent');
     vi.spyOn(apiClient, 'getRecentJobs').mockResolvedValue([recentJob]);
+    vi.spyOn(apiClient, 'getLocalFileCapabilities').mockResolvedValue({systemPickerAvailable: true});
 
     await useAnalysisStore.getState().bootstrap();
 
@@ -23,6 +24,7 @@ describe('useAnalysisStore: local heap dump workflow', () => {
   });
 
   it('chooseDump_cancelledPicker_keepsWorkspaceEmpty', async () => {
+    useAnalysisStore.setState({systemPickerAvailable: true});
     vi.spyOn(apiClient, 'pickLocalHeapDump').mockResolvedValue({selected: false, path: null});
     const openDump = vi.spyOn(apiClient, 'openDump');
 
@@ -34,6 +36,7 @@ describe('useAnalysisStore: local heap dump workflow', () => {
   });
 
   it('chooseDump_selectedFile_startsAnalysisWithSelectedPath', async () => {
+    useAnalysisStore.setState({systemPickerAvailable: true});
     const selectedJob = job('selected');
     vi.spyOn(apiClient, 'pickLocalHeapDump').mockResolvedValue({
       selected: true,
@@ -45,6 +48,16 @@ describe('useAnalysisStore: local heap dump workflow', () => {
 
     expect(openDump).toHaveBeenCalledWith('/tmp/selected.hprof');
     expect(useAnalysisStore.getState().job).toEqual(selectedJob);
+  });
+
+  it('chooseDump_unavailablePicker_doesNotCallPickerAndReturnsActionableError', async () => {
+    useAnalysisStore.setState({systemPickerAvailable: false});
+    const pickLocalHeapDump = vi.spyOn(apiClient, 'pickLocalHeapDump');
+
+    await useAnalysisStore.getState().chooseDump();
+
+    expect(pickLocalHeapDump).not.toHaveBeenCalled();
+    expect(useAnalysisStore.getState().error?.code).toBe('FILE_PICKER_UNAVAILABLE');
   });
 });
 

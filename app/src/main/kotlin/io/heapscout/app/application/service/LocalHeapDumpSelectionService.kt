@@ -11,6 +11,8 @@ class LocalHeapDumpSelectionService(
 ) {
     private val selectionInProgress = AtomicBoolean(false)
 
+    fun isAvailable(): Boolean = picker.isAvailable()
+
     fun select(): Path? {
         if (!selectionInProgress.compareAndSet(false, true)) {
             throw LocalFilePickerBusyException()

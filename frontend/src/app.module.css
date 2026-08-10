@@ -1,48 +1,87 @@
 .app {
   min-height: 100vh;
-  background:
-    radial-gradient(circle at 75% 10%, var(--accent-glow), transparent 28rem),
-    var(--canvas);
+  background: var(--canvas);
   color: var(--text-primary);
 }
 
 .topbar {
   position: sticky;
-  z-index: 10;
+  z-index: 20;
   top: 0;
   height: var(--topbar-height);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 var(--space-6);
+  gap: var(--space-6);
+  padding: 0 clamp(var(--space-5), 4vw, var(--space-12));
   border-bottom: 1px solid var(--border);
   background: var(--topbar-background);
-  backdrop-filter: blur(18px);
+  backdrop-filter: blur(22px) saturate(140%);
 }
 
 .brand,
 .topbarActions,
-.localBadge {
+.localBadge,
+.brandCopy,
+.localBadge > span {
   display: flex;
   align-items: center;
 }
 
 .brand {
+  min-width: 0;
   gap: var(--space-3);
-  font-family: var(--font-display);
-  font-weight: 750;
-  letter-spacing: -0.02em;
 }
 
 .mark {
-  width: 2rem;
-  height: 2rem;
-  display: grid;
-  place-items: center;
-  border-radius: var(--radius-sm);
-  background: var(--text-primary);
-  color: var(--canvas);
-  font: 800 var(--font-xs) var(--font-mono);
+  width: 2.35rem;
+  height: 2.35rem;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.18rem;
+  flex: 0 0 auto;
+  padding: 0.55rem;
+  border-radius: 0.7rem;
+  background: var(--brand-gradient);
+  box-shadow: 0 6px 16px var(--accent-glow);
+}
+
+.mark i {
+  width: 0.22rem;
+  border-radius: var(--radius-full);
+  background: var(--accent-contrast);
+}
+
+.mark i:nth-child(1) {
+  height: 0.55rem;
+}
+
+.mark i:nth-child(2) {
+  height: 1.05rem;
+}
+
+.mark i:nth-child(3) {
+  height: 0.78rem;
+}
+
+.brandCopy,
+.localBadge > span {
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+.brandCopy strong {
+  font-size: var(--font-base);
+  letter-spacing: -0.025em;
+}
+
+.brandCopy small,
+.localBadge small {
+  margin-top: 0.1rem;
+  color: var(--text-tertiary);
+  font-size: var(--font-2xs);
+  font-weight: 600;
 }
 
 .topbarActions {
@@ -51,19 +90,29 @@
 
 .localBadge {
   gap: var(--space-2);
+  padding-right: var(--space-4);
+  border-right: 1px solid var(--border);
+}
+
+.localBadge strong {
   color: var(--text-secondary);
   font-size: var(--font-xs);
-  font-weight: 650;
 }
 
-.localBadge i {
-  width: 0.45rem;
-  height: 0.45rem;
-  border-radius: var(--radius-full);
-  background: var(--success);
-  box-shadow: var(--success-ring);
+.localIcon {
+  width: 1.1rem;
+  color: var(--success);
 }
 
+.languageSwitch {
+  display: flex;
+  padding: 0.2rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-subtle);
+}
+
+.languageSwitch button,
 .themeButton,
 .errorBanner button {
   border: 0;
@@ -73,31 +122,96 @@
   cursor: pointer;
 }
 
+.languageSwitch button {
+  min-width: 2.15rem;
+  padding: 0.38rem 0.5rem;
+  border-radius: 0.45rem;
+  color: var(--text-tertiary);
+  font-size: var(--font-2xs);
+  font-weight: 800;
+  transition: background var(--transition), color var(--transition), box-shadow var(--transition);
+}
+
+.languageSwitch .languageActive {
+  background: var(--surface);
+  box-shadow: var(--shadow-xs);
+  color: var(--text-primary);
+}
+
 .themeButton {
-  padding: var(--space-2) var(--space-3);
+  width: 2.35rem;
+  height: 2.35rem;
+  display: grid;
+  place-items: center;
   border: 1px solid var(--border);
-  border-radius: var(--radius-full);
-  font-size: var(--font-xs);
-  font-weight: 650;
+  border-radius: var(--radius-md);
+  background: var(--surface-subtle);
+  color: var(--text-secondary);
+  transition: border-color var(--transition), color var(--transition), transform var(--transition);
+}
+
+.themeButton:hover {
+  transform: translateY(-1px);
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.themeButton svg {
+  width: 1.15rem;
 }
 
 .errorBanner {
   display: flex;
+  align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
-  padding: var(--space-3) var(--space-6);
+  padding: var(--space-3) clamp(var(--space-5), 4vw, var(--space-12));
+  border-bottom: 1px solid var(--danger-border);
   background: var(--danger-soft);
   color: var(--danger-text);
   font-size: var(--font-sm);
 }
 
-.errorBanner button {
-  font-weight: 750;
-  text-decoration: underline;
+.errorBanner > span {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
 }
 
-@media (max-width: 36rem) {
+.errorBanner strong {
+  width: 1.45rem;
+  height: 1.45rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--danger-border);
+  border-radius: var(--radius-full);
+  font-size: var(--font-xs);
+}
+
+.errorBanner button {
+  flex: 0 0 auto;
+  font-weight: 750;
+  text-decoration: underline;
+  text-underline-offset: 0.15rem;
+}
+
+@media (max-width: 48rem) {
+  .topbar {
+    padding: 0 var(--space-4);
+  }
+
+  .brandCopy small,
   .localBadge {
+    display: none;
+  }
+
+  .topbarActions {
+    gap: var(--space-2);
+  }
+}
+
+@media (max-width: 24rem) {
+  .brandCopy {
     display: none;
   }
 }

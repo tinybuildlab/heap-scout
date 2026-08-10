@@ -1,51 +1,69 @@
 .section {
-  margin-top: var(--space-8);
-}
-
-.heading {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: var(--space-5);
+  min-width: 0;
+  padding: var(--space-6);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
 }
 
 .heading p {
   margin: 0;
   color: var(--accent);
-  font-size: var(--font-xs);
-  font-weight: 800;
-  letter-spacing: 0.13em;
+  font-size: var(--font-2xs);
+  font-weight: 850;
+  letter-spacing: 0.14em;
 }
 
 .heading h2 {
   margin: var(--space-2) 0 0;
   font-family: var(--font-display);
   font-size: var(--font-xl);
-  letter-spacing: -0.035em;
+  letter-spacing: -0.04em;
+}
+
+.heading small {
+  display: block;
+  margin-top: var(--space-2);
+  color: var(--text-tertiary);
+  font-size: var(--font-xs);
+  line-height: 1.5;
 }
 
 .heading > span {
-  padding: var(--space-2) var(--space-3);
+  display: inline-flex;
+  margin-top: var(--space-4);
+  padding: var(--space-1) var(--space-3);
   border-radius: var(--radius-full);
   background: var(--warning-soft);
   color: var(--warning-text);
-  font-size: var(--font-xs);
-  font-weight: 750;
+  font-size: var(--font-2xs);
+  font-weight: 800;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
   gap: var(--space-3);
-  margin-top: var(--space-4);
+  margin-top: var(--space-5);
 }
 
 .grid article {
   min-width: 0;
-  padding: var(--space-5);
+  padding: var(--space-4);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  background: var(--surface);
+  background: var(--surface-subtle);
+}
+
+.cardLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.cardLabel svg {
+  width: 1rem;
+  color: var(--accent);
 }
 
 .grid small,
@@ -56,12 +74,12 @@
 
 .grid small {
   color: var(--text-tertiary);
-  font-size: var(--font-xs);
-  font-weight: 700;
+  font-size: var(--font-2xs);
+  font-weight: 800;
 }
 
 .grid code {
-  margin-top: var(--space-5);
+  margin-top: var(--space-4);
   overflow: hidden;
   color: var(--text-primary);
   font: var(--font-xs) var(--font-mono);
@@ -73,18 +91,24 @@
   margin-top: var(--space-2);
   font-family: var(--font-display);
   font-size: var(--font-lg);
+  letter-spacing: -0.025em;
 }
 
 .grid p {
-  margin: var(--space-4) 0 0;
+  margin: var(--space-3) 0 0;
   color: var(--text-tertiary);
-  font-size: var(--font-sm);
-  line-height: 1.5;
+  font-size: var(--font-xs);
+  line-height: 1.55;
 }
 
 .grid .guidance {
-  background: var(--text-primary);
-  color: var(--canvas);
+  border-color: var(--guidance-background);
+  background: var(--guidance-background);
+  color: var(--text-on-dark);
+}
+
+.guidance .cardLabel svg {
+  color: var(--cyan);
 }
 
 .guidance small,
@@ -92,8 +116,22 @@
   color: var(--guidance-muted);
 }
 
-@media (max-width: 64rem) {
+@media (min-width: 72.01rem) {
+  .section {
+    position: sticky;
+    top: calc(var(--topbar-height) + var(--space-5));
+  }
+}
+
+@media (max-width: 72rem) and (min-width: 48.01rem) {
   .grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 40rem) {
+  .section {
+    padding: var(--space-5);
+    border-radius: var(--radius-lg);
   }
 }

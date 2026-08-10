@@ -1,8 +1,11 @@
 import {useEffect, useState, type FormEvent} from 'react';
+import {useI18n} from '../../hooks/use-i18n';
+import {translateError} from '../../i18n/translations';
 import {formatBytes, formatCount} from '../../lib/format';
 import {useAnalysisStore} from '../../stores/use-analysis-store';
 import {useUiStore} from '../../stores/use-ui-store';
 import type {AnalysisJob, HeapComparisonEntry} from '../../types';
+import {CompareIcon, FolderIcon, SearchIcon} from '../common/icons';
 import styles from './comparison-panel.module.css';
 
 interface ComparisonPanelProps {
@@ -16,12 +19,14 @@ export function ComparisonPanel({baseline}: ComparisonPanelProps) {
   const isChoosing = useAnalysisStore((state) => state.isChoosingComparison);
   const isOpening = useAnalysisStore((state) => state.isOpeningComparison);
   const isLoading = useAnalysisStore((state) => state.isLoadingComparison);
+  const systemPickerAvailable = useAnalysisStore((state) => state.systemPickerAvailable);
   const chooseComparisonDump = useAnalysisStore((state) => state.chooseComparisonDump);
   const openComparisonDump = useAnalysisStore((state) => state.openComparisonDump);
   const loadComparison = useAnalysisStore((state) => state.loadComparison);
   const closeComparison = useAnalysisStore((state) => state.closeComparison);
   const query = useUiStore((state) => state.comparisonQuery);
   const setQuery = useUiStore((state) => state.setComparisonQuery);
+  const {locale, t} = useI18n();
 
   useEffect(() => {
     if (target?.status === 'COMPLETED' && changes.length === 0) void loadComparison('');
@@ -41,34 +46,40 @@ export function ComparisonPanel({baseline}: ComparisonPanelProps) {
     return (
       <section className={styles.panel}>
         <div className={styles.copy}>
-          <p className={styles.eyebrow}>COMPARE SNAPSHOTS</p>
-          <h2>What changed after the baseline?</h2>
-          <p>Open a later dump to rank class growth by object count and shallow heap delta.</p>
-        </div>
-        <button
-          className={styles.chooseButton}
-          type="button"
-          disabled={isChoosing || isOpening}
-          onClick={() => void chooseComparisonDump()}
-        >
-          {isChoosing ? 'Choose target…' : 'Choose target dump'}
-        </button>
-        <div className={styles.pathDivider}><span>or enter a local path</span></div>
-        <form className={styles.openForm} onSubmit={handleOpen}>
-          <label htmlFor="comparison-path">Target dump path</label>
+          <span className={styles.headingIcon}><CompareIcon /></span>
           <div>
-            <input
-              id="comparison-path"
-              value={path}
-              onChange={(event) => setPath(event.target.value)}
-              placeholder="/path/to/later.hprof"
-              spellCheck={false}
-            />
-            <button type="submit" disabled={!path.trim() || isChoosing || isOpening}>
-              {isOpening ? 'Opening…' : 'Compare'}
-            </button>
+            <p className={styles.eyebrow}>{t('comparison.eyebrow')}</p>
+            <h2>{t('comparison.title')}</h2>
+            <p>{t('comparison.description')}</p>
           </div>
-        </form>
+        </div>
+        <div className={styles.openActions}>
+          <button
+            className={styles.chooseButton}
+            type="button"
+            disabled={isChoosing || isOpening || systemPickerAvailable === false}
+            onClick={() => void chooseComparisonDump()}
+          >
+            <FolderIcon />
+            {isChoosing ? t('comparison.choosing') : t('comparison.choose')}
+          </button>
+          <div className={styles.pathDivider}><span>{t('comparison.divider')}</span></div>
+          <form className={styles.openForm} onSubmit={handleOpen}>
+            <label htmlFor="comparison-path">{t('comparison.pathLabel')}</label>
+            <div>
+              <input
+                id="comparison-path"
+                value={path}
+                onChange={(event) => setPath(event.target.value)}
+                placeholder={t('comparison.pathPlaceholder')}
+                spellCheck={false}
+              />
+              <button type="submit" disabled={!path.trim() || isChoosing || isOpening}>
+                {isOpening ? t('comparison.opening') : t('comparison.compare')}
+              </button>
+            </div>
+          </form>
+        </div>
       </section>
     );
   }
@@ -79,12 +90,19 @@ export function ComparisonPanel({baseline}: ComparisonPanelProps) {
       <section className={styles.panel}>
         <div className={styles.progressHeading}>
           <div>
-            <p className={styles.eyebrow}>COMPARISON TARGET</p>
-            <h2>{target.status === 'FAILED' ? 'Target analysis failed' : `Reading ${target.fileName}`}</h2>
-            <p>{target.error?.message ?? `${formatBytes(target.processedBytes)} of ${formatBytes(target.totalBytes)}`}</p>
+            <p className={styles.eyebrow}>{t('comparison.eyebrow')}</p>
+            <h2>{target.status === 'FAILED'
+              ? t('comparison.failed')
+              : t('comparison.reading', {fileName: target.fileName})}</h2>
+            <p>{target.error
+              ? translateError(locale, target.error)
+              : t('comparison.progress', {
+                processed: formatBytes(target.processedBytes),
+                total: formatBytes(target.totalBytes),
+              })}</p>
           </div>
           <button className={styles.secondaryButton} type="button" onClick={() => void closeComparison()}>
-            {target.status === 'FAILED' ? 'Close' : 'Cancel'}
+            {target.status === 'FAILED' ? t('common.close') : t('comparison.cancel')}
           </button>
         </div>
         {target.status !== 'FAILED' && <progress max={100} value={progress} />}
@@ -96,25 +114,26 @@ export function ComparisonPanel({baseline}: ComparisonPanelProps) {
     <section className={styles.panel}>
       <div className={styles.comparisonHeading}>
         <div>
-          <p className={styles.eyebrow}>SNAPSHOT DELTA</p>
+          <p className={styles.eyebrow}>{t('comparison.eyebrow')}</p>
           <h2>{baseline.fileName} → {target.fileName}</h2>
-          <p>Positive values grew in the target snapshot. Estimates are marked explicitly.</p>
+          <p>{t('comparison.deltaDescription')}</p>
         </div>
         <button className={styles.secondaryButton} type="button" onClick={() => void closeComparison()}>
-          Change target
+          {t('comparison.changeTarget')}
         </button>
       </div>
 
       <form className={styles.search} onSubmit={handleSearch}>
-        <label htmlFor="comparison-search">Filter changed classes</label>
+        <label htmlFor="comparison-search">{t('comparison.filterLabel')}</label>
         <div>
+          <SearchIcon />
           <input
             id="comparison-search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="com.example.cache"
+            placeholder={t('comparison.filterPlaceholder')}
           />
-          <button type="submit">Filter</button>
+          <button type="submit">{t('comparison.filter')}</button>
         </div>
       </form>
 
@@ -122,17 +141,18 @@ export function ComparisonPanel({baseline}: ComparisonPanelProps) {
         <table>
           <thead>
             <tr>
-              <th>Class</th>
-              <th>Before</th>
-              <th>After</th>
-              <th>Count Δ</th>
-              <th>Heap Δ</th>
+              <th>{t('comparison.class')}</th>
+              <th>{t('comparison.before')}</th>
+              <th>{t('comparison.after')}</th>
+              <th>{t('comparison.countDelta')}</th>
+              <th>{t('comparison.heapDelta')}</th>
             </tr>
           </thead>
           <tbody>
             {changes.map((entry) => <ComparisonRow key={entry.className} entry={entry} />)}
           </tbody>
         </table>
+        {!isLoading && changes.length === 0 && <div className={styles.emptyRows}>{t('comparison.empty')}</div>}
       </div>
     </section>
   );
@@ -143,6 +163,7 @@ interface ComparisonRowProps {
 }
 
 function ComparisonRow({entry}: ComparisonRowProps) {
+  const {locale, t} = useI18n();
   const countSign = entry.countDelta > 0 ? '+' : '';
   const byteSign = entry.shallowHeapBytesDelta > 0 ? '+' : '';
   const deltaClass = entry.shallowHeapBytesDelta > 0
@@ -155,11 +176,11 @@ function ComparisonRow({entry}: ComparisonRowProps) {
     <tr>
       <td>
         <code>{entry.className}</code>
-        {entry.sizeIsEstimated && <span className={styles.estimate}>estimated</span>}
+        {entry.sizeIsEstimated && <span className={styles.estimate}>{t('common.estimated')}</span>}
       </td>
-      <td>{formatCount(entry.baselineCount)}</td>
-      <td>{formatCount(entry.targetCount)}</td>
-      <td className={deltaClass}>{countSign}{formatCount(entry.countDelta)}</td>
+      <td>{formatCount(entry.baselineCount, locale)}</td>
+      <td>{formatCount(entry.targetCount, locale)}</td>
+      <td className={deltaClass}>{countSign}{formatCount(entry.countDelta, locale)}</td>
       <td className={deltaClass}>{byteSign}{formatBytes(entry.shallowHeapBytesDelta)}</td>
     </tr>
   );

@@ -9,6 +9,7 @@ html {
   background: var(--canvas);
   font-family: var(--font-sans);
   text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
 body {
@@ -22,13 +23,33 @@ input {
   font-family: inherit;
 }
 
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
 button:focus-visible,
 input:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
+button:disabled {
+  cursor: not-allowed;
+}
+
 ::selection {
   background: var(--accent);
   color: var(--accent-contrast);
+}
+
+::-webkit-scrollbar {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 0.2rem solid transparent;
+  border-radius: var(--radius-full);
+  background: var(--border-strong);
+  background-clip: padding-box;
 }

@@ -71,6 +71,11 @@ try {
         throw "Fresh package returned an unexpected job list"
     }
 
+    $capabilitiesResponse = Invoke-RestMethod -Uri "$baseUrl/api/local-files/capabilities" -TimeoutSec 5
+    if ($capabilitiesResponse.systemPickerAvailable -isnot [bool]) {
+        throw "File-picker capabilities did not contain a Boolean availability value"
+    }
+
     $uiResponse = Invoke-WebRequest -Uri "$baseUrl/" -TimeoutSec 5
     if ($uiResponse.StatusCode -ne 200 -or $uiResponse.Content -notmatch "<title>HeapScout</title>") {
         throw "Bundled UI verification failed"

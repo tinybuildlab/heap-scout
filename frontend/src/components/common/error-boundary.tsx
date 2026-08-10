@@ -1,4 +1,5 @@
 import {Component, type ErrorInfo, type ReactNode} from 'react';
+import {detectPreferredLocale, translate} from '../../i18n/translations';
 import styles from './error-boundary.module.css';
 
 interface ErrorBoundaryProps {
@@ -22,14 +23,15 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
   render(): ReactNode {
     if (this.state.hasError) {
+      const locale = detectPreferredLocale();
       return (
         <main className={styles.page}>
           <section className={styles.card}>
             <p className={styles.eyebrow}>HEAPSCOUT</p>
-            <h1>Something went wrong in the interface.</h1>
-            <p>Your heap dump has not been modified. Reload the app to continue.</p>
+            <h1>{translate(locale, 'errorBoundary.title')}</h1>
+            <p>{translate(locale, 'errorBoundary.description')}</p>
             <button className={styles.button} type="button" onClick={() => window.location.reload()}>
-              Reload HeapScout
+              {translate(locale, 'errorBoundary.reload')}
             </button>
           </section>
         </main>

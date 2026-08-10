@@ -1,7 +1,10 @@
 import {useEffect, type FormEvent} from 'react';
+import {SearchIcon} from '../common/icons';
+import {useI18n} from '../../hooks/use-i18n';
+import type {TranslationKey} from '../../i18n/translations';
 import {useAnalysisStore} from '../../stores/use-analysis-store';
 import {useUiStore} from '../../stores/use-ui-store';
-import type {AnalysisJob, ClassHistogramEntry} from '../../types';
+import type {AnalysisJob, ClassHistogramEntry, ParsePhase} from '../../types';
 import {formatBytes, formatCount, formatDuration} from '../../lib/format';
 import {ComparisonPanel} from './comparison-panel';
 import {InvestigationLeads} from './investigation-leads';
@@ -18,6 +21,7 @@ export function AnalysisDashboard({job}: AnalysisDashboardProps) {
   const closeDump = useAnalysisStore((state) => state.closeDump);
   const searchQuery = useUiStore((state) => state.searchQuery);
   const setSearchQuery = useUiStore((state) => state.setSearchQuery);
+  const {locale, t} = useI18n();
 
   useEffect(() => {
     if (job.status === 'COMPLETED' && histogram.length === 0) void loadHistogram('');
@@ -38,83 +42,92 @@ export function AnalysisDashboard({job}: AnalysisDashboardProps) {
     <main className={styles.dashboard}>
       <header className={styles.heading}>
         <div>
-          <div className={styles.breadcrumb}>DUMPS / {job.fileName}</div>
-          <h1>Heap overview</h1>
-          <p>{job.sourcePath}</p>
+          <div className={styles.breadcrumb}><span>{t('dashboard.breadcrumb')}</span><i />{job.fileName}</div>
+          <h1>{t('dashboard.title')}</h1>
+          <p className={styles.headingDescription}>{t('dashboard.description')}</p>
+          <code className={styles.sourcePath}>{job.sourcePath}</code>
         </div>
         <button className={styles.closeButton} type="button" onClick={() => void closeDump()}>
-          Close dump
+          {t('dashboard.closeDump')}
         </button>
       </header>
 
-      <section className={styles.stats} aria-label="Heap summary">
-        <SummaryCard label="Objects" value={formatCount(job.summary.objectCount)} note="parsed records" />
-        <SummaryCard label="Classes" value={formatCount(job.summary.classCount)} note="normalized names" />
+      <section className={styles.stats} aria-label={t('dashboard.title')}>
+        <SummaryCard index="01" label={t('dashboard.objects')} value={formatCount(job.summary.objectCount, locale)} note={t('dashboard.parsedRecords')} />
+        <SummaryCard index="02" label={t('dashboard.classes')} value={formatCount(job.summary.classCount, locale)} note={t('dashboard.normalizedNames')} />
         <SummaryCard
-          label="Shallow heap"
+          index="03"
+          label={t('dashboard.shallowHeap')}
           value={formatBytes(job.summary.shallowHeapBytes)}
-          note={job.summary.containsEstimatedSizes ? 'includes array estimates' : 'exact from records'}
+          note={job.summary.containsEstimatedSizes ? t('dashboard.includesEstimates') : t('dashboard.exactRecords')}
         />
-        <SummaryCard label="Parse time" value={formatDuration(job.summary.parseDurationMillis)} note={job.summary.format} />
+        <SummaryCard index="04" label={t('dashboard.parseTime')} value={formatDuration(job.summary.parseDurationMillis, locale)} note={job.summary.format} />
       </section>
 
-      <ComparisonPanel baseline={job} />
-
-      <InvestigationLeads histogram={histogram} />
-
-      <section className={styles.workspace}>
-        <div className={styles.sectionHeading}>
-          <div>
-            <p className={styles.eyebrow}>CLASS HISTOGRAM</p>
-            <h2>Where the heap is concentrated</h2>
+      <div className={styles.analysisGrid}>
+        <section className={styles.workspace}>
+          <div className={styles.sectionHeading}>
+            <div>
+              <p className={styles.eyebrow}>{t('histogram.eyebrow')}</p>
+              <h2>{t('histogram.title')}</h2>
+              <span>{t('histogram.description')}</span>
+            </div>
           </div>
           <form className={styles.search} onSubmit={handleSearch}>
-            <label className={styles.visuallyHidden} htmlFor="histogram-search">Search classes</label>
-            <input
-              id="histogram-search"
-              value={searchQuery}
-              onChange={(event) => setSearchQuery(event.target.value)}
-              placeholder="name:cache size>10MB count>1000"
-            />
-            <button type="submit">Search</button>
+            <label className={styles.visuallyHidden} htmlFor="histogram-search">{t('histogram.searchLabel')}</label>
+            <div className={styles.searchInput}>
+              <SearchIcon />
+              <input
+                id="histogram-search"
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                placeholder={t('histogram.searchPlaceholder')}
+              />
+            </div>
+            <button type="submit">{t('histogram.search')}</button>
           </form>
-        </div>
 
-        <div className={styles.tableWrap} aria-busy={isLoadingHistogram}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Class</th>
-                <th>Instances</th>
-                <th>Shallow heap</th>
-                <th>Share</th>
-              </tr>
-            </thead>
-            <tbody>
-              {histogram.map((entry) => (
-                <HistogramRow key={entry.className} entry={entry} maxBytes={maxBytes} />
-              ))}
-            </tbody>
-          </table>
-          {!isLoadingHistogram && histogram.length === 0 && (
-            <div className={styles.emptyRows}>No classes match this search.</div>
-          )}
-        </div>
-      </section>
+          <div className={styles.tableWrap} aria-busy={isLoadingHistogram}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>{t('histogram.class')}</th>
+                  <th>{t('histogram.instances')}</th>
+                  <th>{t('histogram.shallowHeap')}</th>
+                  <th>{t('histogram.share')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {histogram.map((entry) => (
+                  <HistogramRow key={entry.className} entry={entry} maxBytes={maxBytes} />
+                ))}
+              </tbody>
+            </table>
+            {!isLoadingHistogram && histogram.length === 0 && (
+              <div className={styles.emptyRows}>{t('histogram.empty')}</div>
+            )}
+          </div>
+        </section>
+
+        <InvestigationLeads histogram={histogram} />
+      </div>
+
+      <ComparisonPanel baseline={job} />
     </main>
   );
 }
 
 interface SummaryCardProps {
+  readonly index: string;
   readonly label: string;
   readonly value: string;
   readonly note: string;
 }
 
-function SummaryCard({label, value, note}: SummaryCardProps) {
+function SummaryCard({index, label, value, note}: SummaryCardProps) {
   return (
     <article className={styles.statCard}>
-      <span>{label}</span>
+      <div><span>{label}</span><i>{index}</i></div>
       <strong>{value}</strong>
       <small>{note}</small>
     </article>
@@ -127,16 +140,21 @@ interface HistogramRowProps {
 }
 
 function HistogramRow({entry, maxBytes}: HistogramRowProps) {
+  const {locale, t} = useI18n();
   return (
     <tr>
       <td>
         <code>{entry.className}</code>
-        {entry.sizeIsEstimated && <span className={styles.estimate}>estimated</span>}
+        {entry.sizeIsEstimated && <span className={styles.estimate}>{t('common.estimated')}</span>}
       </td>
-      <td>{formatCount(entry.instanceCount)}</td>
+      <td>{formatCount(entry.instanceCount, locale)}</td>
       <td>{formatBytes(entry.shallowHeapBytes)}</td>
       <td>
-        <progress max={maxBytes} value={entry.shallowHeapBytes} aria-label={`${entry.className} relative size`} />
+        <progress
+          max={maxBytes}
+          value={entry.shallowHeapBytes}
+          aria-label={t('histogram.relativeSize', {className: entry.className})}
+        />
       </td>
     </tr>
   );
@@ -148,31 +166,43 @@ interface AnalysisProgressProps {
 }
 
 function AnalysisProgress({job, onClose}: AnalysisProgressProps) {
+  const {t} = useI18n();
   const progress = job.totalBytes > 0 ? Math.round((job.processedBytes / job.totalBytes) * 100) : 0;
   const failed = job.status === 'FAILED' || job.status === 'CANCELLED';
+  const phase = job.phase ? t(PHASE_TRANSLATIONS[job.phase]) : t('phase.queued');
 
   return (
     <main className={styles.progressPage}>
       <section className={styles.progressCard}>
-        <p className={styles.eyebrow}>{failed ? 'ANALYSIS STOPPED' : 'STREAMING HPROF'}</p>
-        <h1>{failed ? 'The dump could not be analyzed.' : `Reading ${job.fileName}`}</h1>
+        <p className={styles.eyebrow}>{failed ? t('progress.stoppedEyebrow') : t('progress.runningEyebrow')}</p>
+        <h1>{failed ? t('progress.failedTitle') : t('progress.readingTitle', {fileName: job.fileName})}</h1>
         <p className={styles.progressDescription}>
-          {job.error?.message ?? 'HeapScout is aggregating class metadata without loading every object into memory.'}
+          {job.error?.message ?? t('progress.description')}
         </p>
         {!failed && (
           <div className={styles.progressBlock}>
             <div className={styles.progressLabels}>
-              <span>{job.phase?.toLowerCase() ?? 'queued'}</span>
+              <span>{phase}</span>
               <strong>{progress}%</strong>
             </div>
             <progress max={100} value={progress} />
-            <small>{formatBytes(job.processedBytes)} of {formatBytes(job.totalBytes)}</small>
+            <small>{t('progress.processed', {
+              processed: formatBytes(job.processedBytes),
+              total: formatBytes(job.totalBytes),
+            })}</small>
           </div>
         )}
         <button className={styles.closeButton} type="button" onClick={() => void onClose()}>
-          {failed ? 'Close dump' : 'Cancel analysis'}
+          {failed ? t('dashboard.closeDump') : t('progress.cancelAnalysis')}
         </button>
       </section>
     </main>
   );
 }
+
+const PHASE_TRANSLATIONS: Readonly<Record<ParsePhase, TranslationKey>> = {
+  HEADER: 'phase.header',
+  METADATA: 'phase.metadata',
+  HEAP: 'phase.heap',
+  COMPLETE: 'phase.complete',
+};
