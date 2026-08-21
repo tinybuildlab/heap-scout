@@ -2,7 +2,7 @@
 
 ## Before tagging
 
-- [ ] `logcat-io/heap-scout` is public and `main` is the default branch.
+- [ ] `tinybuildlab/heap-scout` is public and `main` is the default branch.
 - [ ] CI is green on `main`.
 - [ ] `npm audit --audit-level=high` reports no high or critical vulnerabilities.
 - [ ] JVM tests, the actual HotSpot compatibility test, and the 1GiB/256MiB bounded-memory test pass.

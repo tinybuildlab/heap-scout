@@ -1,6 +1,6 @@
 # HeapScout
 
-[![CI](https://github.com/logcat-io/heap-scout/actions/workflows/ci.yml/badge.svg)](https://github.com/logcat-io/heap-scout/actions/workflows/ci.yml)
+[![CI](https://github.com/tinybuildlab/heap-scout/actions/workflows/ci.yml/badge.svg)](https://github.com/tinybuildlab/heap-scout/actions/workflows/ci.yml)
 
 HeapScout is a local-first Java/Kotlin heap dump explorer focused on guided diagnosis, fast search, and side-by-side comparison.
 
@@ -42,7 +42,7 @@ docs/      Product decisions and architecture records
 ## Build and run
 
 ```bash
-git clone https://github.com/logcat-io/heap-scout.git
+git clone https://github.com/tinybuildlab/heap-scout.git
 cd heap-scout
 
 cd frontend
@@ -70,7 +70,7 @@ The UI restores the most recent analysis when the browser is refreshed. Results 
 
 The release workflow runs for every `v*` tag and attaches a self-contained application image for macOS, Windows, and Linux. Users do not need Node.js or a separate JDK:
 
-1. Download the archive matching the operating system and CPU architecture from [GitHub Releases](https://github.com/logcat-io/heap-scout/releases).
+1. Download the archive matching the operating system and CPU architecture from [GitHub Releases](https://github.com/tinybuildlab/heap-scout/releases).
 2. Download the adjacent `.sha256` file and verify the archive checksum.
 3. Extract the archive.
 4. Launch `HeapScout.app` on macOS, `HeapScout.exe` on Windows, or `bin/HeapScout` on Linux.
